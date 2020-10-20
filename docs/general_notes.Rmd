@@ -1,0 +1,126 @@
+---
+title: "General Notes"
+output: 
+  html_document:
+    theme: darkly
+    highlight: breezedark
+  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, eval=FALSE, message=FALSE, warning=FALSE)
+
+```
+
+<style>
+  .title{
+    display: none;
+  }
+</style>
+
+<br>
+
+## General Notes {.tabset .tabset-fade .tabset-pills}
+
+
+This is just a running compendium of all the things. Not particularly organized, but used as a dumping ground for snippets, thoughts etc.
+
+<br>
+
+### Resources for `snakemake`
+
+Using [`snakemake`](https://snakemake.readthedocs.io/en/stable/tutorial/basics.html) resources and shortcuts
+
+ - `snakemake -np`: `n`= dry run, and `p` is print resulting shell commands.
+ - Snakemake workshop [here](https://github.com/kdmurray91/2020_snakemake-workshop)
+
+### `snakemake` & `angsd`
+
+Notes about using snakemake and `angsd` are here.
+
+ - [**Running out of memory**](https://github.com/ANGSD/angsd/issues/243)
+ 
+    Use `-P 2`
+ 
+    ```{bash, echo=T}
+ FILTERS="-uniqueOnly 1 -only_proper_pairs 1 -remove_bads 1 -skipTriallelic 1 -minMapQ {params.min_mapQ} -minQ {params.min_Q} -snp_pval {params.snp_pval} -minMaf {params.min_maf} -postCutoff {params.post_cutoff}"
+
+TODO="-doMajorMinor 1 -doMaf 1 -doCounts 1 -dumpCounts 4 -doGlf 2 -GL 2 -doGeno 32 -doPost 1 -doVcf 1"
+
+angsd -P 2 -bam {input.cram} -ref {params.ref} \
+-rf {input.regions} -sites {input.sites} \
+-out {params.out_prefix} -setMinChunkSize 1000 \
+$FILTERS $TODO
+
+    ```
+
+ - [Using a snakemake with `angsd`](https://raw.githubusercontent.com/kdmurray91/euc-dp15-workspace/master/workspace/Snakefile)
+### Mapping Reads with `snakemake`
+
+If a reference exists, can use the following approach to map samples to the reference, and then sort and index, followed by 
+
+```{bash, echo=TRUE}
+SAMPLES = ["A", "B"]
+
+
+rule all:
+    input:
+        "plots/quals.svg"
+
+
+rule bwa_map:
+    input:
+        "data/genome.fa",
+        "data/samples/{sample}.fastq"
+    output:
+        "mapped_reads/{sample}.bam"
+    shell:
+        "bwa mem {input} | samtools view -Sb - > {output}"
+
+
+rule samtools_sort:
+    input:
+        "mapped_reads/{sample}.bam"
+    output:
+        "sorted_reads/{sample}.bam"
+    shell:
+        "samtools sort -T sorted_reads/{wildcards.sample} "
+        "-O bam {input} > {output}"
+
+
+rule samtools_index:
+    input:
+        "sorted_reads/{sample}.bam"
+    output:
+        "sorted_reads/{sample}.bam.bai"
+    shell:
+        "samtools index {input}"
+
+
+rule bcftools_call:
+    input:
+        fa="data/genome.fa",
+        bam=expand("sorted_reads/{sample}.bam", sample=SAMPLES),
+        bai=expand("sorted_reads/{sample}.bam.bai", sample=SAMPLES)
+    output:
+        "calls/all.vcf"
+    shell:
+        "samtools mpileup -g -f {input.fa} {input.bam} | "
+        "bcftools call -mv - > {output}"
+
+
+rule plot_quals:
+    input:
+        "calls/all.vcf"
+    output:
+        "plots/quals.svg"
+    script:
+        "scripts/plot-quals.py"
+
+```
+
+Can specify a target file in command line by using a list surrounded by brackets:
+
+```snakemake -np mapped_reads/{A,B}.bam```
+
+
