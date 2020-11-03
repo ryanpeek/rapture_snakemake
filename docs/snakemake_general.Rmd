@@ -1,0 +1,69 @@
+---
+title: "Snakemake 1000"
+output: 
+  html_document:
+    theme: darkly
+    highlight: breezedark
+  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, eval=FALSE, message=FALSE, warning=FALSE)
+
+```
+
+<style>
+  .title{
+    display: none;
+  }
+</style>
+
+<br>
+
+## Starting up Snakemake
+
+Basic steps to getting snakemake running.
+
+
+### Acquire Cluster Resources
+
+First it's best to start and run things in a screen/tmux session.
+
+```{bash}
+
+screen -S name_of_socket
+
+
+```
+
+Next we need to request resources from the cluster:
+
+```{bash}
+
+srun ydad yada
+
+```
+
+### Running Things on the cluster
+
+```{bash}
+
+snakemake --cores 1 -n -p -s snakefile
+
+```
+
+`-s` specifies the Snakefile
+`-n` specifies a dry run
+`-p` says print out what the hell happens
+`-f` force all rules to run
+`-R` use with a rule name after to run a single rule or up/thru just that rule
+
+### Demultiplexing Snakefile
+
+```{bash}
+
+# paste in from cluster here
+
+
+```
+
