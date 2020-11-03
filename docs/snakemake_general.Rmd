@@ -40,7 +40,7 @@ Next we need to request resources from the cluster:
 
 ```{bash}
 
-srun ydad yada
+srun -p high -t 300:00:00 --mem=10G --pty bash
 
 ```
 
