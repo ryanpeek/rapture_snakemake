@@ -2,13 +2,15 @@
 title: "Snakemake 1000"
 output: 
   html_document:
+    toc: true
+    toc_float: true
     theme: darkly
     highlight: breezedark
   
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, eval=FALSE, message=FALSE, warning=FALSE)
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE, message=FALSE, warning=FALSE)
 
 ```
 
@@ -20,9 +22,10 @@ knitr::opts_chunk$set(echo = FALSE, eval=FALSE, message=FALSE, warning=FALSE)
 
 <br>
 
+
 ## Starting up Snakemake
 
-Basic steps to getting snakemake running.
+Basic steps to getting `snakemake` running.
 
 
 ### Acquire Cluster Resources
@@ -62,7 +65,41 @@ snakemake --cores 1 -n -p -s snakefile
 
 ```{bash}
 
+# add symlinks
+ln -s /home/millermr/UCDavis/SOMM504/so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq.gz
+ln -s /home/millermr/UCDavis/SOMM504/so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq.gz
+```
+
+
+
+```{bash}
+
 # paste in from cluster here
+
+SOMMS = ['SOMM507']
+SEQS = ['so507_CKDL200163821-1a_HCJNTCCX2_L2_1.fq.gz', 'so507_CKDL200163821-1a_HCJNTCCX2_L2_2.fq.gz'
+
+rule all:
+    input:
+        expand("/home/rapeek/projects/SEQS/{somm}/raw/{seqs}.fq.gz", somm=SOMMS, seqs=SEQS),
+        expand("/home/rapeek/projects/SEQS/{somm}/raw/{seqs}.fq", somm=SOMMS, seqs=SEQS)
+
+
+rule copy_data:
+    input:
+        "/home/millermr/UCDavis/{somms}/{seq}.fq.gz"
+    output:
+        "/home/rapeek/projects/SEQS/{somms}/raw/{seq}.fq.gz"
+    shell: """
+        cp {input} {output}
+        """
+
+rule unzip_data:
+    input:
+        "/home/rapeek/projects/SEQS/{somms}/raw/{seqs}.fq.gz"
+    output:
+        "/home/rapeek/projects/SEQS/{somms}/raw/{seqs}.fq"
+    shell: "gunzip -k {input}"
 
 
 ```
