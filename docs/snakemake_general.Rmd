@@ -45,6 +45,8 @@ Next we need to request resources from the cluster:
 
 srun -p high -t 300:00:00 --mem=10G --pty bash
 
+srun -p high -t 300:00:00 --mem MaxMemPerNode --pty bash
+
 ```
 
 ### Running Things on the cluster
@@ -68,9 +70,53 @@ snakemake --cores 1 -n -p -s snakefile
 # add symlinks
 ln -s /home/millermr/UCDavis/SOMM504/so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq.gz
 ln -s /home/millermr/UCDavis/SOMM504/so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq.gz
+
+# list of plates:
+["AAGAGT","ACACCT","ATGGCT","CATGGT","CCTACT","CGATTG","CGCTGT","CGTCTT","CTCATT","GACCCT","GCCAGT","GGGGGT","GTATGT","TCAGTT","TCTTGT","TGCGCT"]
 ```
 
+```{bash}
+# another approach w yaml config file:
+INFILES : "infiles"
 
+normmethods : ["Median", "Quantile"] 
+or
+normmethods : - "Median"
+              - "Quantile"
+
+kclusters : [1,3,5,7,10]
+or
+kclusters : - 1
+            - 3
+            - 5
+            - 7
+            - 10
+
+
+# snakefile
+rule preprocess:
+input:
+    bam = expand("data/{sample}.csv",
+                 sample = config["INFILES"])
+
+params :
+    kcluster = config["kcluster"]
+
+output:
+    bamo = expand("results/{sample}_pp_{method}_{cluster}.csv",
+                  sample = config["INFILES"],
+                  method = config["normmethod"],
+                  cluster = config["kcluster"])
+
+script:
+    "scripts/preprocess.py {input.bam} {params.kcluster}"
+
+# run with 
+snakemake --configfile  path/to/config.yml
+
+
+
+```
 
 ```{bash}
 
