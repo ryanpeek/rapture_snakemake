@@ -53,7 +53,7 @@ du -hs dir/
  - SEQS 351G
 
 TOTAL SPACE RAPEEK USING =~481G OF 22 TB!!! WTF?
-
+Use this: `/group/millermrgrp2/ryan`
 
 **Count files within a dir or mult dir**
 `find . -type f | cut -d/ -f2 | sort | uniq -c`
