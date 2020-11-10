@@ -70,6 +70,8 @@ snakemake --cores 1 -n -p -s snakefile
 # add symlinks
 ln -s /home/millermr/UCDavis/SOMM504/so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq.gz
 ln -s /home/millermr/UCDavis/SOMM504/so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq.gz
+ln -s /home/millermr/UCDavis/SOMM507/so507_CKDL200163821-1a_HCJNTCCX2_L2_1.fq.gz
+ln -s /home/millermr/UCDavis/SOMM507/so507_CKDL200163821-1a_HCJNTCCX2_L2_2.fq.gz
 
 # list of plates:
 ["AAGAGT","ACACCT","ATGGCT","CATGGT","CCTACT","CGATTG","CGCTGT","CGTCTT","CTCATT","GACCCT","GCCAGT","GGGGGT","GTATGT","TCAGTT","TCTTGT","TGCGCT"]
