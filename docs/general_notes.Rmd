@@ -2,6 +2,8 @@
 title: "General Notes"
 output: 
   html_document:
+    toc: true
+    toc_float: true
     theme: darkly
     highlight: breezedark
 ---
@@ -25,6 +27,46 @@ knitr::opts_chunk$set(echo = FALSE, eval=FALSE, message=FALSE, warning=FALSE)
 This is just a running compendium of all the things. Not particularly organized, but used as a dumping ground for snippets, thoughts etc.
 
 <br>
+
+### bash stuff
+
+Check space on drive:
+```{bash, eval=F}
+
+# for entire drive
+df -H ~
+
+# for single directory
+df -h bin/
+
+# disk use
+du -hs dir/
+
+```
+
+
+ - rabo_denovo: 11G
+ - rana_rapture: 67G
+ - rangewide: 42G
+ - rasi_hybrid: 5G
+ - SEQS 351G
+
+TOTAL SPACE RAPEEK USING =~481G OF 22 TB!!! WTF?
+Use this: `/group/millermrgrp2/ryan`
+
+**Count files within a dir or mult dir**
+`find . -type f | cut -d/ -f2 | sort | uniq -c`
+
+Cut file names:
+
+```
+ls *R1.*gz | cut -d'_' -f2 > plates.txt
+```
+
+```{bash, eval=F}
+['AAGAGT','ACACCT','ATGGCT','CATGGT','CCTACT','CGATTG','CGCTGT','CGTCTT','CTCATT','GACCCT','GCCAGT','GGGGGT','GTATGT','TCAGTT','TCTTGT','TGCGCT']
+
+```
 
 ### Resources for `snakemake`
 

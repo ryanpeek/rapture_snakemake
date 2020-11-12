@@ -1,0 +1,154 @@
+---
+title: "Snakemake 1000"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: darkly
+    highlight: breezedark
+  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE, message=FALSE, warning=FALSE)
+
+```
+
+<style>
+  .title{
+    display: none;
+  }
+</style>
+
+<br>
+
+
+## Starting up Snakemake
+
+Basic steps to getting `snakemake` running.
+
+
+### Acquire Cluster Resources
+
+First it's best to start and run things in a screen/tmux session.
+
+```{bash}
+
+screen -S name_of_socket
+
+
+```
+
+Next we need to request resources from the cluster:
+
+```{bash}
+
+srun -p high -t 300:00:00 --mem=10G --pty bash
+
+srun -p high -t 300:00:00 --mem MaxMemPerNode --pty bash
+
+```
+
+### Running Things on the cluster
+
+```{bash}
+
+snakemake --cores 1 -n -p -s snakefile
+
+```
+
+`-s` specifies the Snakefile
+`-n` specifies a dry run
+`-p` says print out what the hell happens
+`-f` force all rules to run
+`-R` use with a rule name after to run a single rule or up/thru just that rule
+
+### Demultiplexing Snakefile
+
+```{bash}
+
+# add symlinks
+ln -s /home/millermr/UCDavis/SOMM504/so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq.gz
+ln -s /home/millermr/UCDavis/SOMM504/so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq.gz
+ln -s /home/millermr/UCDavis/SOMM507/so507_CKDL200163821-1a_HCJNTCCX2_L2_1.fq.gz
+ln -s /home/millermr/UCDavis/SOMM507/so507_CKDL200163821-1a_HCJNTCCX2_L2_2.fq.gz
+
+# list of plates:
+["AAGAGT","ACACCT","ATGGCT","CATGGT","CCTACT","CGATTG","CGCTGT","CGTCTT","CTCATT","GACCCT","GCCAGT","GGGGGT","GTATGT","TCAGTT","TCTTGT","TGCGCT"]
+```
+
+```{bash}
+# another approach w yaml config file:
+INFILES : "infiles"
+
+normmethods : ["Median", "Quantile"] 
+or
+normmethods : - "Median"
+              - "Quantile"
+
+kclusters : [1,3,5,7,10]
+or
+kclusters : - 1
+            - 3
+            - 5
+            - 7
+            - 10
+
+
+# snakefile
+rule preprocess:
+input:
+    bam = expand("data/{sample}.csv",
+                 sample = config["INFILES"])
+
+params :
+    kcluster = config["kcluster"]
+
+output:
+    bamo = expand("results/{sample}_pp_{method}_{cluster}.csv",
+                  sample = config["INFILES"],
+                  method = config["normmethod"],
+                  cluster = config["kcluster"])
+
+script:
+    "scripts/preprocess.py {input.bam} {params.kcluster}"
+
+# run with 
+snakemake --configfile  path/to/config.yml
+
+
+
+```
+
+```{bash}
+
+# paste in from cluster here
+
+SOMMS = ['SOMM507']
+SEQS = ['so507_CKDL200163821-1a_HCJNTCCX2_L2_1.fq.gz', 'so507_CKDL200163821-1a_HCJNTCCX2_L2_2.fq.gz'
+
+rule all:
+    input:
+        expand("/home/rapeek/projects/SEQS/{somm}/raw/{seqs}.fq.gz", somm=SOMMS, seqs=SEQS),
+        expand("/home/rapeek/projects/SEQS/{somm}/raw/{seqs}.fq", somm=SOMMS, seqs=SEQS)
+
+
+rule copy_data:
+    input:
+        "/home/millermr/UCDavis/{somms}/{seq}.fq.gz"
+    output:
+        "/home/rapeek/projects/SEQS/{somms}/raw/{seq}.fq.gz"
+    shell: """
+        cp {input} {output}
+        """
+
+rule unzip_data:
+    input:
+        "/home/rapeek/projects/SEQS/{somms}/raw/{seqs}.fq.gz"
+    output:
+        "/home/rapeek/projects/SEQS/{somms}/raw/{seqs}.fq"
+    shell: "gunzip -k {input}"
+
+
+```
+
