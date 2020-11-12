@@ -4,7 +4,6 @@ output:
   html_document:
     theme: darkly
     highlight: breezedark
-  
 ---
 
 ```{r setup, include=FALSE}

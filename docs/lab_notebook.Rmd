@@ -1,0 +1,263 @@
+---
+title: "Lab Notebook"
+date: "Updated `r format(Sys.time(), '%Y-%m-%d %H:%M')`"
+output: 
+  html_document:
+    toc: true
+    toc_float:
+        collapsed: true
+    theme: darkly
+    highlight: breezedark
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
+## 1. Downloading Data
+
+Data lives in Mike's UCDavis folder, copy over (or link)
+
+```{bash symlink}
+
+ln -s /home/millermr/UCDavis/SOMM504/*fq.gz /home/rapeek/projects/SEQS/SOMM504/raw/
+
+ln -s /home/millermr/UCDavis/SOMM507/*fq.gz /home/rapeek/projects/SEQS/SOMM507/raw/
+
+```
+
+## 2. Split out Plates
+
+These data (2020-OCT) were a bit different so needed a custom script Mike wrote to split out plates `split.sh`. The plates info is as follows:
+
+ - SOMM504 50% SOMM478, 15% SOMM479, 35% SOMM503
+ - J. Weston: 96 index A03, A04
+ - Peek Rapture: 96 index A07-B07, C03
+ 
+A03     TCAGTT
+A04     CGTCTT
+
+```{bash splitPlates}
+#!/bin/bash
+
+grep --no-group-separator -A 3 ":TCAGTT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_TCAGTT_R1.fastq
+grep --no-group-separator -A 3 ":TCAGTT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_TCAGTT_R2.fastq
+
+grep --no-group-separator -A 3 ":CGTCTT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_CGTCTT_R1.fastq
+grep --no-group-separator -A 3 ":CGTCTT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_CGTCTT_R2.fastq
+
+grep --no-group-separator -A 3 ":CTCATT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_CTCATT_R1.fastq
+grep --no-group-separator -A 3 ":CTCATT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_CTCATT_R2.fastq
+
+grep --no-group-separator -A 3 ":TCTTGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_TCTTGT_R1.fastq
+grep --no-group-separator -A 3 ":TCTTGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_TCTTGT_R2.fastq
+
+grep --no-group-separator -A 3 ":CGCTGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_CGCTGT_R1.fastq
+grep --no-group-separator -A 3 ":CGCTGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_CGCTGT_R2.fastq
+
+grep --no-group-separator -A 3 ":GTATGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_GTATGT_R1.fastq
+grep --no-group-separator -A 3 ":GTATGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_GTATGT_R2.fastq
+
+grep --no-group-separator -A 3 ":CATGGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_CATGGT_R1.fastq
+grep --no-group-separator -A 3 ":CATGGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_CATGGT_R2.fastq
+
+grep --no-group-separator -A 3 ":GGGGGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_GGGGGT_R1.fastq
+grep --no-group-separator -A 3 ":GGGGGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_GGGGGT_R2.fastq
+
+grep --no-group-separator -A 3 ":AAGAGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_AAGAGT_R1.fastq
+grep --no-group-separator -A 3 ":AAGAGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_AAGAGT_R2.fastq
+
+grep --no-group-separator -A 3 ":GCCAGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_GCCAGT_R1.fastq
+grep --no-group-separator -A 3 ":GCCAGT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_GCCAGT_R2.fastq
+
+grep --no-group-separator -A 3 ":ATGGCT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_ATGGCT_R1.fastq
+grep --no-group-separator -A 3 ":ATGGCT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_ATGGCT_R2.fastq
+
+grep --no-group-separator -A 3 ":TGCGCT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_TGCGCT_R1.fastq
+grep --no-group-separator -A 3 ":TGCGCT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_TGCGCT_R2.fastq
+
+grep --no-group-separator -A 3 ":GACCCT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_GACCCT_R1.fastq
+grep --no-group-separator -A 3 ":GACCCT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_GACCCT_R2.fastq
+
+grep --no-group-separator -A 3 ":ACACCT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_ACACCT_R1.fastq
+grep --no-group-separator -A 3 ":ACACCT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_ACACCT_R2.fastq
+
+grep --no-group-separator -A 3 ":CCTACT" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_CCTACT_R1.fastq
+grep --no-group-separator -A 3 ":CCTACT" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_CCTACT_R2.fastq
+
+grep --no-group-separator -A 3 ":CGATTG" so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq > SOMM504_CGATTG_R1.fastq
+grep --no-group-separator -A 3 ":CGATTG" so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq > SOMM504_CGATTG_R2.fastq
+
+```
+
+## 3. Back that UP!!
+
+Use `rclone` to back up copies of these data:
+
+```{bash rclone}
+
+# start transfer node
+farmT
+
+# load rclone
+module load rclone
+
+# navigate to folder where data lives
+cd ~/projects/SEQS/SOMM504
+
+# test rclone run: here flag with dry run
+# this pulls all *.gz files in fastq/ and creates same dir in gdrive
+rclone copy -P fastq/ --include "*.gz" gdrive:SEQS_backup/SOMM504/fastq --dry-run
+# do it
+rclone copy -P fastq/ --include "*.gz" gdrive:SEQS_backup/SOMM504/fastq
+
+# do it again
+cd ../SOMM507
+rclone copy -P fastq/ --include "*.gz" gdrive:SEQS_backup/SOMM507/fastq
+
+# also copy the raw files
+
+```
+
+
+## 3. Unzip & Split out Wells
+
+Next step was to unzip fastq.gz into plate folders, and demultiplex into 96 well paired (A/B) samples. For this, use:
+
+ - `sbatch -t 1200 -p high code/03_split_wells.sh SOMM504 CGATTG`
+ 
+ Full script here:
+ 
+```{bash splitWells}
+#!/bin/bash
+#SBATCH --mail-user=rapeek@ucdavis.edu
+#SBATCH --mail-type=ALL
+#SBATCH -J split
+#SBATCH -e 03_split_wells.%j.err
+#SBATCH -o 03_split_wells.%j.out
+#SBATCH -c 20
+#SBATCH -p high
+#SBATCH --time=1-20:00:00
+
+set -e # exits upon failing command
+set -v # verbose -- all lines
+set -x # trace of all commands after expansion before execution
+
+# This script is run from /home/rapeek/projects/SEQS/code/03_split_lanes.sh
+# You may need modifications to run it alone.
+
+fqdir=$1
+
+bc1=$2 # ATGGCT, ACACCT, ATGGCT
+
+cd /home/rapeek/projects/SEQS/${fqdir}/fastq
+
+if [ ! -d "/${bc1}" ] && echo "Directory ${bc1} DOES NOT exist..."; then
+        for file in ${fqdir}_${bc1}_R*.fastq.gz
+                do mkdir -p ${bc1};
+                echo $file 
+                gunzip -k ${file};
+                mv ${fqdir}_${bc1}_R*.fastq ${bc1}/.
+        done
+fi
+
+cd ${bc1}
+
+# then split samples
+/home/rapeek/projects/SEQS/code/BarcodeSplit_RAD_PE.2019.pl ${fqdir}_${bc1}_R1.fastq ${fqdir}_${bc1}_R2.fastq GGACAAGCTATGCAGG,GGAAACATCGTGCAGG,GGACATTGGCTGCAGG,GGACCACTGTTGCAGG,GGAACGTGATTGCAGG,GGCGCTGATCTGCAGG,GGCAGATCTGTGCAGG,GGATGCCTAATGCAGG,GGAACGAACGTGCAGG,GGAGTACAAGTGCAGG,GGCATCAAGTTGCAGG,GGAGTGGTCATGCAGG,GGAACAACCATGCAGG,GGAACCGAGATGCAGG,GGAACGCTTATGCAGG,GGAAGACGGATGCAGG,GGAAGGTACATGCAGG,GGACACAGAATGCAGG,GGACAGCAGATGCAGG,GGACCTCCAATGCAGG,GGACGCTCGATGCAGG,GGACGTATCATGCAGG,GGACTATGCATGCAGG,GGAGAGTCAATGCAGG,GGAGATCGCATGCAGG,GGAGCAGGAATGCAGG,GGAGTCACTATGCAGG,GGATCCTGTATGCAGG,GGATTGAGGATGCAGG,GGCAACCACATGCAGG,GGCAAGACTATGCAGG,GGCAATGGAATGCAGG,GGCACTTCGATGCAGG,GGCAGCGTTATGCAGG,GGCATACCAATGCAGG,GGCCAGTTCATGCAGG,GGCCGAAGTATGCAGG,GGCCGTGAGATGCAGG,GGCCTCCTGATGCAGG,GGCGAACTTATGCAGG,GGCGACTGGATGCAGG,GGCGCATACATGCAGG,GGCTCAATGATGCAGG,GGCTGAGCCATGCAGG,GGCTGGCATATGCAGG,GGGAATCTGATGCAGG,GGGACTAGTATGCAGG,GGGAGCTGAATGCAGG,GGGATAGACATGCAGG,GGGCCACATATGCAGG,GGGCGAGTAATGCAGG,GGGCTAACGATGCAGG,GGGCTCGGTATGCAGG,GGGGAGAACATGCAGG,GGGGTGCGAATGCAGG,GGGTACGCAATGCAGG,GGGTCGTAGATGCAGG,GGGTCTGTCATGCAGG,GGGTGTTCTATGCAGG,GGTAGGATGATGCAGG,GGTATCAGCATGCAGG,GGTCCGTCTATGCAGG,GGTCTTCACATGCAGG,GGTGAAGAGATGCAGG,GGTGGAACAATGCAGG,GGTGGCTTCATGCAGG,GGTGGTGGTATGCAGG,GGTTCACGCATGCAGG,GGACACGAGATGCAGG,GGAAGAGATCTGCAGG,GGAAGGACACTGCAGG,GGAATCCGTCTGCAGG,GGAATGTTGCTGCAGG,GGACACTGACTGCAGG,GGACAGATTCTGCAGG,GGAGATGTACTGCAGG,GGAGCACCTCTGCAGG,GGAGCCATGCTGCAGG,GGAGGCTAACTGCAGG,GGATAGCGACTGCAGG,GGACGACAAGTGCAGG,GGATTGGCTCTGCAGG,GGCAAGGAGCTGCAGG,GGCACCTTACTGCAGG,GGCCATCCTCTGCAGG,GGCCGACAACTGCAGG,GGAGTCAAGCTGCAGG,GGCCTCTATCTGCAGG,GGCGACACACTGCAGG,GGCGGATTGCTGCAGG,GGCTAAGGTCTGCAGG,GGGAACAGGCTGCAGG,GGGACAGTGCTGCAGG,GGGAGTTAGCTGCAGG,GGGATGAATCTGCAGG,GGGCCAAGACTGCAGG ${fqdir}_${bc1}
+
+
+```
+ 
+ Currently this is really rudimentary but it seems to be working...
+ 
+## BONUS: `snakemake`
+
+ - Build `snakemake` rules that incorporate these scripts to stream line this process.
+ - use expansion to make this easier.
+
+### Start a Snakemake Cluster
+
+Best done in a screen. To open and name the socket, try `screen -S my_name`.
+
+Then can request cluster resources: 
+
+```{bash startClust}
+
+srun -p high -t 300:00:00 --mem=10G --pty bash
+
+```
+
+### Set up and run `snakefile`
+
+To run a snakefile, make sure you are in the correct dir, and you can either specify the file with `-s`, or just generally call `Snakefile`.
+
+```{bash}
+snakemake --cores 1 Snakefile -n 
+
+# dry run
+snakemake --cores 1 -p -n -s Snakefile
+
+```
+
+**To run single rule**, or up until a single rule, remember `-n` is dry-run of snakemake.
+
+```{bash snakeSingle}
+
+snakemake -R --until rule
+
+# run rule copy_data1 only
+snakemake --cores 1 -f -p -R copy_data1
+
+```
+
+### `Snakefile`
+
+This is the initial attempt:
+
+```{bash Snake1}
+
+# names
+SOMMS = ['SOMM504']
+SEQS = ['so504_CKDL200163818-1a_HCJKCCCX2_L7_1', 'so504_CKDL200163818-1a_HCJKCCCX2_L7_2']
+
+rule all:
+    input:
+    expand("/home/rapeek/projects/SEQS/{somms}/raw/{seqs}.fq.gz", somms=SOMMS, seqs=SEQS)
+
+# copy data
+rule copy_data:
+    input:  "/home/millermr/UCDavis/{somms}/{seq}.fq.gz"
+    output: "/home/rapeek/projects/SEQS/{somms}/raw/{seq}.fq.gz"
+    shell:'''
+    ln -sf {input} {output}
+    '''
+
+```
+
+This works but it's very duplicative
+
+```{bash}
+
+SOMMS = ['SOMM504']
+
+rule copy_data1:
+    input:
+        "/home/millermr/UCDavis/SOMM504/so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq.gz",
+    output:
+        "/home/rapeek/projects/SEQS/SOMM504/raw/so504_CKDL200163818-1a_HCJKCCCX2_L7_1.fq.gz",
+    shell:
+        "ln -fs {input} {output}"
+
+rule copy_data2:
+    input:
+        "/home/millermr/UCDavis/SOMM504/so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq.gz"
+    output:
+        "/home/rapeek/projects/SEQS/SOMM504/raw/so504_CKDL200163818-1a_HCJKCCCX2_L7_2.fq.gz"
+    shell:
+        "ln -fs {input} {output}"
+
+
+
+```
+
